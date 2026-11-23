@@ -27,7 +27,7 @@ allow_internet: false
 
 meshphone:
   enabled: true
-  map_refresh_hours: 6
+  map_refresh_hours: 24
   # offices_url: http://wt0f-meshphone.local.mesh/api/network_json
   # whitepages_urls:
   #   - http://WT0F-freepbx.local.mesh/whitepages.xml

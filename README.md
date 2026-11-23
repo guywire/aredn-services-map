@@ -23,10 +23,10 @@ The checks make the same single request a visitor would make, never more:
 
 | What | How | How often |
 |---|---|---|
-| Mesh host and service list | one sysinfo request to your AREDN node | every 6 h, and each daily pass |
-| MeshPhone directory, white pages, trunk reports | one GET each, over the mesh | hourly / every 6 h |
-| Each PBX | one IAX2 POKE (it answers PONG before any login) | every 6 h |
-| Each person's phone on the mesh | one SIP OPTIONS | every 6 h |
+| Mesh host and service list | one sysinfo request to your AREDN node | once a day, with each pass |
+| MeshPhone directory, white pages, trunk reports | one GET each, over the mesh | once a day |
+| Each PBX | one IAX2 POKE (it answers PONG before any login) | once a day |
+| Each person's phone on the mesh | one SIP OPTIONS | once a day |
 | Each advertised service | one GET (web), one RTSP DESCRIBE (rtsp), one NTP request (time) or one TCP connect (anything else) | once a day |
 | A dedicated camera host | TCP connects to the camera-app ports 554, 8554, 8000, 37777, 9000 and 34567, to say which app views it | once a day |
 | ADS-B / AIS receivers | up to six GETs for the usual feed file locations | once a day |

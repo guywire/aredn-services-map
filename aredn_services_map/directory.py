@@ -1,7 +1,7 @@
 """
 The MeshPhone directory, fetched over the mesh: the WT0F MeshPhone offices
 (names, codes, number patterns, trunks) and the newest WhitePages copy that
-answers. Refreshed hourly and cached on disk so a restart has data at once.
+answers. Refreshed once a day and cached on disk so a restart has data at once.
 
 Config (meshphone section, all optional; see meshphone_directory.settings):
   offices_url, whitepages_urls, dns_server
@@ -19,7 +19,7 @@ from aredn_services_map import meshphone_directory as mp
 
 log = logging.getLogger(__name__)
 
-REFRESH_S = 3600
+REFRESH_S = 24 * 3600
 RETRY_S = 600
 
 
@@ -57,6 +57,10 @@ class Directory:
             self._task = asyncio.create_task(self._loop())
 
     async def _loop(self) -> None:
+        # a cached copy from less than a day ago: wait out the rest of the day first
+        age = time.time() - (self.mp_offices_refreshed_at or 0)
+        if self.mp_offices and age < REFRESH_S:
+            await asyncio.sleep(REFRESH_S - age)
         while True:
             try:
                 self.errors = await self.refresh()
