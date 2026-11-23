@@ -1,0 +1,38 @@
+# AREDN Services Map - copy to config.yaml and edit.
+
+listen: 0.0.0.0
+port: 8088
+data_dir: ./data            # caches, so a restart shows the last results at once
+
+# An AREDN node whose sysinfo lists the whole mesh's hosts and services.
+# A supernode's /a/sysinfo does; a regular node may list only what's near it
+# (try it: the "hosts" list should be in the thousands on a big mesh).
+node_url: http://localnode.local.mesh/cgi-bin/sysinfo.json
+
+# Your MeshPhone office name (as in the directory), if this box is its PBX.
+# Leave empty otherwise; the map then shows "measured from this station".
+own_office: ""
+
+# Mesh DNS for *.local.mesh names: "auto" finds it in the DHCP lease, or set
+# your node's address, e.g. 10.1.2.3.
+dns_server: auto
+
+# Name each node's place ("Salem, Oregon") with OpenStreetMap Nominatim,
+# at most one request a second, cached. Needs internet; off = grid squares only.
+geocode: true
+
+# Serve only to mesh / LAN addresses (recommended: the MeshPhone white pages
+# hold other operators' names and contact details, published for the mesh).
+allow_internet: false
+
+meshphone:
+  enabled: true
+  map_refresh_hours: 6
+  # offices_url: http://wt0f-meshphone.local.mesh/api/network_json
+  # whitepages_urls:
+  #   - http://WT0F-freepbx.local.mesh/whitepages.xml
+  # trunk_reports_url: http://wt0f-meshphone.local.mesh/network_map.html
+
+services:
+  enabled: true
+  refresh_hours: 24         # every service gets one request per refresh (at least 6 h)

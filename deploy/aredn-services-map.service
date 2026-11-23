@@ -1,0 +1,24 @@
+# systemd unit. Install (as root), assuming the project is in /opt/aredn-services-map
+# with a virtualenv in .venv and your config in /etc/aredn-services-map.yaml:
+#   useradd --system --home /opt/aredn-services-map aredn-map
+#   chown -R aredn-map: /opt/aredn-services-map
+#   cp deploy/aredn-services-map.service /etc/systemd/system/
+#   systemctl enable --now aredn-services-map
+[Unit]
+Description=AREDN Services Map
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=aredn-map
+WorkingDirectory=/opt/aredn-services-map
+ExecStart=/opt/aredn-services-map/.venv/bin/python -m aredn_services_map --config /etc/aredn-services-map.yaml
+Restart=on-failure
+RestartSec=10
+NoNewPrivileges=true
+ProtectSystem=full
+ProtectHome=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aredn-services-map"
+version = "0.1.0"
+description = "A map of the MeshPhone offices, cameras and services advertised on an AREDN mesh, checked once a day"
+readme = "README.md"
+license = {text = "GPL-3.0-or-later"}
+requires-python = ">=3.10"
+dependencies = [
+  "fastapi>=0.100",
+  "uvicorn>=0.23",
+  "httpx>=0.24",
+  "pyyaml>=6",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=7"]
+
+[project.scripts]
+aredn-services-map = "aredn_services_map.__main__:main"
+
+[tool.setuptools]
+packages = ["aredn_services_map"]
+
+[tool.setuptools.package-data]
+aredn_services_map = ["templates/*.html", "static/leaflet/*", "static/leaflet/images/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
