@@ -9,6 +9,14 @@ A map of what's on an [AREDN](https://www.arednmesh.org/) mesh network, checked 
 
 It's one small Python web app. Run it on any Linux box or Raspberry Pi that's on the mesh and open it in a browser.
 
+![MeshPhone offices, trunk latency and cameras across the US AREDN mesh](docs/screenshot-meshphone.png)
+
+*MeshPhone offices and trunks (coloured by latency) with cameras, measured from one station on the mesh.*
+
+![Every other AREDN service by kind across the US](docs/screenshot-services.png)
+
+*The same map with the service kinds switched on: ADS-B, AIS, satellite, packet/BBS, Winlink, APRS, TAK, chat, weather, time servers and the rest.*
+
 ## What it sends, and how often
 
 The checks make the same single request a visitor would make, never more:
