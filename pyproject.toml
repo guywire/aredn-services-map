@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aredn-services-map"
-version = "0.1.0"
+version = "0.2.0"
 description = "A map of the MeshPhone offices, cameras and services advertised on an AREDN mesh, checked once a day"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
@@ -14,6 +14,7 @@ dependencies = [
   "uvicorn>=0.23",
   "httpx>=0.24",
   "pyyaml>=6",
+  "cryptography>=3.4",
 ]
 
 [project.optional-dependencies]

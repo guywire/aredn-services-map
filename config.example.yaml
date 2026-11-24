@@ -36,3 +36,43 @@ meshphone:
 services:
   enabled: true
   refresh_hours: 24         # every service gets one request per refresh (at least 6 h)
+
+# The name other copies of this map see on results you share (e.g. your node
+# or callsign-based name). It's pinned to this copy's key by the others, so
+# keep it unique. Empty = the name of the node in node_url plus a short key
+# fingerprint (e.g. "n0call-hap/3fa9c1").
+station: ""
+
+# Sharing with other copies of this map on the mesh. Services are checked a
+# quarter of the mesh at a time (one quarter every refresh_hours / 4); a
+# quarter another copy checked within max_age_hours is taken from it after it
+# passes the checks in the README ("Sharing and regions"). Other copies are
+# found by their advertised service: on your node, advertise this map as a
+# service named "AREDN Services Map". Add any others here by URL.
+sharing:
+  enabled: true
+  max_age_hours: 4
+  peers: []
+  #  - http://10.1.2.3:8088
+
+# Updates from GitHub releases: a daily check (needs internet), shown on the
+# page. auto_install: true installs a newer release and restarts by itself;
+# otherwise run "aredn-services-map --update" and restart the service.
+updates:
+  check: true
+  auto_install: false
+
+# Map tiles. The page gets its tiles from this box, which serves each one from
+# an offline tile file (mbtiles), its own cache, the internet (url), or another
+# copy of this map on the mesh, in that order; so a box without internet still
+# shows a map when any box on the mesh has the area. OpenStreetMap's servers are
+# run by volunteers: tiles are fetched only as people view them and cached; for
+# heavier use set url to your own / a commercial tile server or use an mbtiles file.
+tiles:
+  url: https://tile.openstreetmap.org/{z}/{x}/{y}.png
+  mbtiles: ""               # e.g. /opt/maps/maine.mbtiles
+  internet: true            # false: never fetch tiles from the internet
+  share: true               # answer other copies' tile requests (file and cache only)
+  cache_mb: 1000
+  cache_days: 30            # older tiles are refreshed when online, still served when not
+  max_zoom: 19

@@ -59,3 +59,45 @@ def test_module_config_shape(tmp_path):
     assert m["radio_directory"]["meshphone"]["own_office"] == "hometown"
     assert m["radio_directory"]["aredn_services"]["refresh_hours"] == 12
     assert m["database"]["path"].startswith(str(tmp_path))
+
+
+def test_44_net_is_on_the_mesh(tmp_path):
+    app = _app(tmp_path)
+    assert _get(app, "/", ip="44.63.1.2").status_code == 200
+    assert _get(app, "/", ip="44.130.0.9").status_code == 200
+    assert _get(app, "/", ip="44.200.0.1").status_code == 403          # 44.192/10: sold, not amateur
+    assert _get(app, "/", ip="45.0.0.1").status_code == 403
+
+
+def test_peer_endpoints(tmp_path):
+    import time
+    from aredn_services_map import sharing
+    app = _app(tmp_path)
+    info = _get(app, "/peer/v1/info").json()
+    assert info["app"] == "aredn-services-map" and info["key"]
+    assert info["layers"]["services"] == {"scheme": sharing.SCHEME, "regions": {}}
+    assert info["layers"]["tiles"]["max_zoom"] == 19
+    assert _get(app, "/peer/v1/services/region/1").status_code == 404
+    doc = sharing.make_doc(services.identity, "k1map", 0, time.time(), [])
+    services.regions[0] = {"doc": doc, "scanned_at": time.time(), "station": "k1map", "count": 0, "services": []}
+    try:
+        assert _get(app, "/peer/v1/services/region/1").json() == doc          # exactly as signed
+        assert _get(app, "/peer/v1/info").json()["layers"]["services"]["regions"]["1"]["station"] == "k1map"
+        assert [r["region"] for r in _get(app, "/services.json").json()["regions"]] == [1, 2, 3, 4]
+    finally:
+        services.regions.clear()
+    off = _app(tmp_path, sharing={"enabled": False})
+    assert _get(off, "/peer/v1/info").status_code == 404
+
+
+def test_update_check_can_be_off(tmp_path):
+    r = _get(_app(tmp_path, updates={"check": False}), "/update.json").json()
+    assert r["available"] is False and r["error"] == "update check off"
+
+
+def test_tile_route(tmp_path):
+    app = _app(tmp_path, tiles={"internet": False})
+    assert _get(app, "/tiles/30/0/0.png").status_code == 404
+    assert _get(app, "/peer/v1/tiles/3/1/1.png").status_code == 404
+    assert _get(app, "/tiles/1/0/0.png", ip="8.8.8.8").status_code == 403
+    assert "tiles/{z}/{x}/{y}.png" in _get(app, "/").text

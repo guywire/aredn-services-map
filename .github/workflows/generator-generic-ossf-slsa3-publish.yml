@@ -1,0 +1,68 @@
+# Builds the release tarball and signs a SLSA level 3 provenance statement for it.
+#
+# Runs when a GitHub Release is published (the tarball and the provenance file
+# are attached to that release), or manually from Actions > "SLSA generic
+# generator" > Run workflow (artifacts are then kept on the workflow run only).
+#
+# Verify a download with slsa-verifier - see "Updating" in README.md.
+name: SLSA generic generator
+
+on:
+  workflow_dispatch:
+  release:
+    types: [published]
+
+permissions: read-all
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write   # attach the tarball to the release
+    outputs:
+      digests: ${{ steps.hash.outputs.digests }}
+      name: ${{ steps.build.outputs.name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build release tarball
+        id: build
+        run: |
+          set -euo pipefail
+          version="$(python3 -c 'import re;print(re.search(r"__version__ = \"([^\"]+)\"", open("aredn_services_map/__init__.py").read()).group(1))')"
+          name="aredn-services-map-${version}.tar.gz"
+          mkdir -p dist
+          git archive --format=tar.gz --prefix="aredn-services-map-${version}/" -o "dist/${name}" HEAD
+          echo "name=${name}" >> "${GITHUB_OUTPUT}"
+          ls -l dist
+
+      - name: Generate subject for provenance
+        id: hash
+        run: |
+          set -euo pipefail
+          cd dist
+          echo "digests=$(sha256sum ./*.tar.gz | base64 -w0)" >> "${GITHUB_OUTPUT}"
+
+      - name: Upload tarball (workflow artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.build.outputs.name }}
+          path: dist/${{ steps.build.outputs.name }}
+          if-no-files-found: error
+
+      - name: Attach tarball to the release
+        if: github.event_name == 'release'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "${{ github.event.release.tag_name }}" "dist/${{ steps.build.outputs.name }}" --clobber
+
+  provenance:
+    needs: [build]
+    permissions:
+      actions: read     # read the workflow path
+      id-token: write   # sign the provenance (Sigstore keyless)
+      contents: write   # add the provenance file to the release
+    uses: slsa-framework/slsa-github-generator/.github/workflows/generator_generic_slsa3.yml@v2.1.0
+    with:
+      base64-subjects: "${{ needs.build.outputs.digests }}"
+      upload-assets: ${{ github.event_name == 'release' }}
