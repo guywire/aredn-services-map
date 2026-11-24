@@ -331,3 +331,16 @@ def test_default_station_names_are_unique(tmp_path):
     assert names[0] != names[1] and all(x.startswith("same-supernode/") for x in names)
     svc.station = "N0CALL-map"
     assert svc.station_name() == "N0CALL-map"
+
+
+def test_stream_must_be_a_known_rtsp_path_on_a_camera():
+    s = {"ip": "10.1.0.5", "name": "Cam", "link": "http://10.1.0.6/"}
+    base = asv.base_record(s, HOSTS, "camera")
+    m = {**sharing.shareable({**_svc(5)[1], "id": base["id"]}),
+         "stream": {"port": 554, "path": "/h264Preview_01_main", "status": "open"}}
+    assert sharing.clean_measured(m, base)["stream"] == {"port": 554, "path": "/h264Preview_01_main", "status": "open"}
+    for bad in ({"port": 554, "path": "/../evil", "status": "open"}, {"port": 80, "path": "/", "status": "open"},
+                {"port": 554, "path": "/", "status": "pwned"}, "rtsp://elsewhere/"):
+        assert sharing.clean_measured({**m, "stream": bad}, base) is None, bad
+    other = asv.base_record(s, HOSTS, "other")
+    assert sharing.clean_measured({**m, "id": other["id"]}, other) is None   # only cameras have streams
