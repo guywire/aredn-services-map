@@ -2,7 +2,7 @@
 
 A map of what's on an [AREDN](https://www.arednmesh.org/) mesh network, checked from your own station:
 
-- **MeshPhone offices and trunks.** Every PBX in the WT0F MeshPhone directory, placed at the AREDN node it sits behind, coloured by whether it answers an IAX2 POKE right now. PBXs found on the mesh but missing from the directory are added. Trunks show their latency, from the PBXs' own reports where they publish them.
+- **MeshPhone offices and trunks.** Every PBX in the MeshPhone directory, placed at the AREDN node it sits behind, coloured by whether it answers an IAX2 POKE right now. PBXs found on the mesh but missing from the directory are added. Trunks show their latency, from the PBXs' own reports where they publish them.
 - **People.** The MeshPhone white pages, with each person's office and location. Phones advertised on the mesh get a SIP OPTIONS ping, and everyone else shows whether their office's PBX answers.
 - **Cameras.** Every camera or video stream advertised on the mesh, with a status (open, password needed or not answering) and what it is: a still image, live MJPEG, an RTSP stream or a web page. Where it can tell, it also names the software (motionEye, Frigate, Hikvision, Dahua, Reolink and so on) and the app that views it.
 - **Every other service, by kind.** ADS-B and AIS receivers (including whether they publish an open `aircraft.json` / `ships.json` feed), satellite receivers, packet/BBS, Winlink, APRS, TAK, Meshtastic/MeshCore gateways, radio/SDR/AllStar, chat, weather, time servers (with an NTP query and stratum), mail, internet gateways, power/solar monitors, maps and wikis.
