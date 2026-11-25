@@ -58,9 +58,10 @@ class Directory:
 
     async def _loop(self) -> None:
         # a cached copy from less than a day ago: wait out the rest of the day first
+        every = mp.directory_refresh_s(self._config)       # with the map (map_refresh_hours)
         age = time.time() - (self.mp_offices_refreshed_at or 0)
-        if self.mp_offices and age < REFRESH_S:
-            await asyncio.sleep(REFRESH_S - age)
+        if self.mp_offices and age < every:
+            await asyncio.sleep(every - age)
         while True:
             try:
                 self.errors = await self.refresh()
@@ -68,7 +69,7 @@ class Directory:
                 self.errors = [f"{exc.__class__.__name__}: {exc}"]
             if self.errors:
                 log.info("MeshPhone directory: %s", "; ".join(self.errors))
-            await asyncio.sleep(RETRY_S if self.errors and not self.mp_offices else REFRESH_S)
+            await asyncio.sleep(RETRY_S if self.errors and not self.mp_offices else every)
 
     async def refresh(self) -> list[str]:
         """Offices + white pages over the mesh. Returns errors (empty when all is well)."""
