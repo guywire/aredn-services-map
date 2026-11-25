@@ -155,7 +155,8 @@ def create_app(cfg: dict | None = None, start_jobs: bool = True) -> FastAPI:
         d = services.data or {}
         return JSONResponse({"services": d.get("services", []), "categories": d.get("categories", []),
                              "generated_at": d.get("generated_at"), "summary": d.get("summary", {}),
-                             "regions": services.regions_meta(), "error": services.last_error,
+                             "regions": services.regions_meta(), "sharing": services.sharing_meta(),
+                             "error": services.last_error,
                              "running": services.running}, headers=NO_CACHE)
 
     @app.get("/cameras.json")
