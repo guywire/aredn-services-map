@@ -399,3 +399,18 @@ def test_directory_follows_the_map_refresh():
     assert directory_refresh_s({"radio_directory": {"meshphone": {"map_refresh_hours": 12}}}) == 11 * 3600
     assert directory_refresh_s({"radio_directory": {"meshphone": {"map_refresh_hours": 0.5}}}) == 3600
     assert directory_refresh_s({"radio_directory": {"meshphone": {"map_refresh_hours": "x"}}}) == 23 * 3600
+
+
+
+def test_a_published_page_finds_an_office_whose_listed_address_is_stale():
+    offices = [dict(_off("EASTLANE", "N7AAA", ip="10.99.0.1", trunks=["HARBOR"]), office_codes=["55501"],
+                    hostname="lane-pbx.local.mesh"),
+               dict(_off("JACKSON", "N7BBB", ip="10.99.0.2"), office_codes=["55503"], hostname="jackson-pbx.local.mesh"),
+               dict(_off("HARBOR", "W1XYZ", ip="10.30.0.57"), office_codes=["55502"])]
+    hosts = HOSTS + [{"name": "lane-pbx-new", "ip": "10.77.0.5"}, {"name": "jackson-pbx", "ip": "10.77.0.6"}]
+    pages = [{"ip": "10.77.0.5", "host": "lane-pbx-new", "code": "55501",
+              "peers": [{"host": "jackson-pbx", "code": "55503", "ok": True, "ms": 40},
+                        {"host": "10.30.0.57", "code": "55502", "ok": True, "ms": 30},
+                        {"host": "freepbx", "code": "55503", "ok": True, "ms": 1}]}]    # not its host name: ignored
+    extra = mm.published_candidates(offices, pages, hosts)
+    assert extra == {"EASTLANE": ["10.77.0.5"], "JACKSON": ["10.77.0.6"], "HARBOR": ["10.30.0.57"]}
