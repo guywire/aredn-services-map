@@ -366,7 +366,7 @@ def test_parse_published_trunks_in_all_three_forms():
 
 def test_trunk_pages_found_by_name_or_path():
     svcs = [{"name": "PBX Trunk Status", "link": "http://k1aaa-pbx:80/iax_peers.txt"},
-            {"name": "APISON PBX Trunk Status", "link": "http://k1aaa-pbx:80/iax/iax2_status_ami.php"},
+            {"name": "Ridge PBX Trunk Status", "link": "http://k1aaa-pbx:80/iax/iax2_status_ami.php"},
             {"name": "PBX Line Report", "link": "http://k1aaa-pbx:80/cgi-bin/sip_peers"},      # handsets, not trunks
             {"name": "Trunk Report", "link": "http://192.0.2.5/x"},                            # not on the mesh
             {"name": "Club page", "link": "http://k1aaa-pbx:80/"}]
@@ -403,9 +403,9 @@ def test_directory_follows_the_map_refresh():
 
 
 def test_a_published_page_finds_an_office_whose_listed_address_is_stale():
-    offices = [dict(_off("EASTLANE", "N7AAA", ip="10.99.0.1", trunks=["HARBOR"]), office_codes=["55501"],
+    offices = [dict(_off("LAKETOWN", "N7AAA", ip="10.99.0.1", trunks=["HARBOR"]), office_codes=["55501"],
                     hostname="lane-pbx.local.mesh"),
-               dict(_off("JACKSON", "N7BBB", ip="10.99.0.2"), office_codes=["55503"], hostname="jackson-pbx.local.mesh"),
+               dict(_off("PINETOWN", "N7BBB", ip="10.99.0.2"), office_codes=["55503"], hostname="jackson-pbx.local.mesh"),
                dict(_off("HARBOR", "W1XYZ", ip="10.30.0.57"), office_codes=["55502"])]
     hosts = HOSTS + [{"name": "lane-pbx-new", "ip": "10.77.0.5"}, {"name": "jackson-pbx", "ip": "10.77.0.6"}]
     pages = [{"ip": "10.77.0.5", "host": "lane-pbx-new", "code": "55501",
@@ -413,4 +413,4 @@ def test_a_published_page_finds_an_office_whose_listed_address_is_stale():
                         {"host": "10.30.0.57", "code": "55502", "ok": True, "ms": 30},
                         {"host": "freepbx", "code": "55503", "ok": True, "ms": 1}]}]    # not its host name: ignored
     extra = mm.published_candidates(offices, pages, hosts)
-    assert extra == {"EASTLANE": ["10.77.0.5"], "JACKSON": ["10.77.0.6"], "HARBOR": ["10.30.0.57"]}
+    assert extra == {"LAKETOWN": ["10.77.0.5"], "PINETOWN": ["10.77.0.6"], "HARBOR": ["10.30.0.57"]}

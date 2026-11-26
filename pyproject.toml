@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "aredn-services-map"
-version = "0.3.3"
+version = "0.3.4"
 description = "A map of the MeshPhone offices, cameras and services advertised on an AREDN mesh, checked once a day"
 readme = "README.md"
 license = {text = "GPL-3.0-or-later"}
